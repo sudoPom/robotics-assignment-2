@@ -77,7 +77,7 @@ class FullyConnectedLayer:
             self.activation = activation()
 
     def forward(self, input_data):
-        self.input_data = input_data
+        self.input_data = np.array(input_data)
         self.output_data = np.dot(input_data, self.weights) + self.bias
         self.output_data = self.activation(self.output_data)
 
@@ -132,8 +132,8 @@ class NeuralNetwork:
             loss_list = []
             np.random.shuffle(dataset)
             for data_x, data_y in dataset:
-                y_hat = self.forward(data_x)
-                loss = MSELoss(data_y, y_hat)
+                y_hat = self.forward(np.array(data_x))
+                loss = MSELoss(np.array(data_y), y_hat)
                 loss_list.append(loss.loss())
                 delta = loss.gradient()
                 self.backward(delta)
@@ -151,7 +151,7 @@ def main():
     y = func(x)
     dataset = list(zip(x, y))
 
-    layer_config = [(1, 3), (3, 1)]
+    layer_config = [(1, 3), (3, 3), (3, 1)]
     Net = NeuralNetwork(layer_config)
     Net.train(dataset, epochs=5000, lr=0.001)
     y_pred = []
