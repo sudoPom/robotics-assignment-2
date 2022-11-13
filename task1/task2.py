@@ -8,6 +8,12 @@ one_hot_encoding = {
     'Iris-virginica': np.array([0, 0, 1])
 }
 
+classification_encoding = {
+    'Iris-setosa': 0,
+    'Iris-versicolor': 1,
+    'Iris-virginica': 2
+}
+
 result_label = ['Iris-setosa', 'Iris-versicolor', 'Iris-virginica']
 
 
@@ -110,7 +116,7 @@ class MSELoss:
         return 2 * (y_pred - y)
 
 
-class CrossEntropyLoss:
+class Softmax_CrossEntropyLoss:
     @staticmethod
     def loss(y, y_pred):
         return -np.sum(y * np.log(y_pred))
@@ -244,9 +250,10 @@ class NeuralNetwork:
             np.random.shuffle(dataset)
             for data_x, data_y in dataset:
                 y_hat = self.forward(np.array(data_x))
-                loss = loss_func.loss(np.array(data_y), y_hat)
+                ont_hot_y = one_hot_encoding[data_y]
+                loss = loss_func.loss(ont_hot_y, y_hat)
                 loss_list.append(loss)
-                delta = loss_func.gradient(np.array(data_y), y_hat)
+                delta = loss_func.gradient(ont_hot_y, y_hat)
                 self.backward(delta)
                 self.update(lr)
 
@@ -271,7 +278,7 @@ class NeuralNetwork:
         self.modules = model_dict['modules']
 
 
-def prep_dataset(file_path: str):
+def prep_dataset(file_path: str, split_ratio=0.7):
     dataset = []
     with open(file_path) as f:
         for line in f:
@@ -279,30 +286,48 @@ def prep_dataset(file_path: str):
             data_x = np.array(data[:4])
             data_x = data_x.astype(np.float_)
             data_x = data_x[np.newaxis, :]
-            data_y = one_hot_encoding[data[-1]]
-            data_y = data_y[np.newaxis, :]
+            data_y = data[-1]
             dataset.append((data_x, data_y))
 
-    return dataset
+    np.random.shuffle(dataset)
+    split_idx = round(len(dataset) * split_ratio)
+    training_set = dataset[:split_idx]
+    validation_set = dataset[split_idx:]
+
+    return training_set, validation_set
+
+
+def validate(model, validation_set):
+    correct = 0
+    for data_x, data_y in validation_set:
+        y_hat = model.predict(data_x)
+        y_hat = np.argmax(y_hat)
+        data_y_class = classification_encoding[data_y]
+        if y_hat == data_y_class:
+            correct += 1
+
+    return correct / len(validation_set)
 
 
 def main():
-    dataset = prep_dataset('IrisData.txt')
-    Net = NeuralNetwork()
+    train_set, test_set = prep_dataset('IrisData.txt')
+    model = NeuralNetwork()
     layer_config = [
-        {'input_size': 4, 'output_size': 10, 'normalize': Normalization(), 'activation': Tanh()},
-        {'input_size': 10, 'output_size': 3, 'normalize': DirectLayer(), 'activation': Softmax()},
+        {'input_size': 4, 'output_size': 5, 'normalize': Normalization(), 'activation': Tanh()},
+        {'input_size': 5, 'output_size': 3, 'normalize': DirectLayer(), 'activation': Softmax()},
     ]
 
-    Net.make_layers(layer_config, optimizer=Adam)
-    Net.train(dataset, epochs=5000, loss_func=MSELoss, lr=0.002)
-    Net.dump_model('model_task2.pkl')
+    model.make_layers(layer_config, optimizer=Adam)
+    model.train(train_set, epochs=2000, loss_func=Softmax_CrossEntropyLoss, lr=0.005)
+    accuracy = validate(model, test_set)
+    print('Accuracy: {}'.format(accuracy))
+    model.dump_model('model_task2.pkl')
 
 
 def test_predict():
     Net = NeuralNetwork()
     Net.load_model('model_task2.pkl')
-    test_data = np.array([[5.9,1.5,5.1,1.8]])
+    test_data = np.array([[5.9, 1.5, 5.1, 1.8]])
     prediction = Net.predict(test_data)
     print(prediction)
     classification = np.argmax(prediction)
@@ -312,4 +337,4 @@ def test_predict():
 
 
 if __name__ == '__main__':
-    test_predict()
+    main()
