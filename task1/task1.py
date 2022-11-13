@@ -69,11 +69,11 @@ class DirectLayer:
 class MSELoss:
     @staticmethod
     def loss(y, y_pred):
-        return np.mean(np.power(y - y_pred, 2))
+        return 0.5 * np.mean(np.power(y - y_pred, 2))
 
     @staticmethod
     def gradient(y, y_pred):
-        return 2 * (y_pred - y)
+        return y_pred - y
 
 
 class Normalization:
@@ -228,7 +228,7 @@ class NeuralNetwork:
 
 
 def main():
-    x = np.arange(-1, 1, 0.01)
+    x = np.arange(-1, 1, 0.05)
     y = func(x)
     dataset = list(zip(x, y))
 
@@ -253,7 +253,7 @@ def main():
     while selection.upper() not in ['N', 'Y']:
         selection = input('Do you want to save the model(Y/N): ')
     if selection.upper() == 'Y':
-        Net.dump_model('model.pkl')
+        Net.dump_model('model_task1.pkl')
 
 
 def test_predict():
