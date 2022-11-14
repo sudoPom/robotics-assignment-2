@@ -3,6 +3,7 @@ import numpy as np
 import pickle
 
 from activation_functions import *
+from loss_functions import *
 
 one_hot_encoding = {
     'Iris-setosa': np.array([1, 0, 0]),
@@ -17,32 +18,6 @@ classification_encoding = {
 }
 
 result_label = ['Iris-setosa', 'Iris-versicolor', 'Iris-virginica']
-
-
-class ISELoss:
-    """Instantaneous Square Error Loss Function"""
-    @staticmethod
-    def loss(y, y_pred):
-        """Computes the Instantaneous Square Error of the networks calculated values."""
-        return 0.5 * np.sum(np.power(y - y_pred, 2))
-
-    @staticmethod
-    def gradient(y, y_pred):
-        """Calculates the derivative of the sum of square errors"""
-        return y_pred - y
-
-
-class Softmax_CrossEntropyLoss:
-    """Softmax Cross Entropy Function"""
-
-    @staticmethod
-    def loss(y, y_pred):
-        """Computes the Softmax Cross Entropy on the networks calculated values."""
-        return -np.sum(y * np.log(y_pred))
-
-    @staticmethod
-    def gradient(y, y_pred):
-        return y_pred - y
 
 
 class Normalization:

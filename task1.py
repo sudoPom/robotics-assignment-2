@@ -3,6 +3,7 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 from activation_functions import *
+from loss_functions import *
 
 
 def func(x):
@@ -12,11 +13,11 @@ def func(x):
 class MSELoss:
     @staticmethod
     def loss(y, y_pred):
-        return 0.5 * np.sum(np.power(y - y_pred, 2))
+        return np.mean(np.power(y - y_pred, 2))
 
     @staticmethod
     def gradient(y, y_pred):
-        return y_pred - y
+        return 2 * (y_pred - y)
 
 
 class Normalization:
