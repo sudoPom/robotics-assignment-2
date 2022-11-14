@@ -2,68 +2,11 @@ import os
 import pickle
 import numpy as np
 import matplotlib.pyplot as plt
+from activation_functions import *
 
 
 def func(x):
     return 0.8 * np.power(x, 3) + 0.3 * np.power(x, 2) - 0.4 * x + np.random.normal(0, 0.02, x.shape)
-
-
-class ReLu:
-    def __init__(self):
-        self.x = None
-
-    def forward(self, x):
-        self.x = x
-        return np.maximum(0, x)
-
-    def backward(self, grad):
-        grad * (self.x > 0)
-        return grad
-
-    def __call__(self, *args, **kwargs):
-        return self.forward(*args, **kwargs)
-
-
-class Leaky_ReLu:
-    def __init__(self, alpha):
-        self.x = None
-        self.alpha = alpha
-
-    def forward(self, x):
-        self.x = x
-        return np.maximum(self.alpha * x, x)
-
-    def backward(self, grad):
-        return grad * (self.x > 0) + self.alpha * grad * (self.x <= 0)
-
-    def __call__(self, *args, **kwargs):
-        return self.forward(*args, **kwargs)
-
-
-class Tanh:
-    def __init__(self):
-        self.x = None
-
-    def forward(self, x):
-        self.x = x
-        return np.tanh(x)
-
-    def backward(self, grad):
-        return grad * (1 - np.tanh(self.x) ** 2)
-
-    def __call__(self, *args, **kwargs):
-        return self.forward(*args, **kwargs)
-
-
-class DirectLayer:
-    def forward(self, x):
-        return x
-
-    def backward(self, grad):
-        return grad
-
-    def __call__(self, *args, **kwargs):
-        return self.forward(*args, **kwargs)
 
 
 class MSELoss:
