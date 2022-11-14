@@ -69,7 +69,7 @@ class DirectLayer:
 class MSELoss:
     @staticmethod
     def loss(y, y_pred):
-        return 0.5 * np.mean(np.power(y - y_pred, 2))
+        return 0.5 * np.sum(np.power(y - y_pred, 2))
 
     @staticmethod
     def gradient(y, y_pred):
@@ -155,7 +155,8 @@ class FullyConnectedLayer:
         return self.output_data
 
     def backward(self, delta):
-        self.weights_grad = self.activation.backward(np.dot(self.input_data.T, delta))
+        self.weights_grad = self.activation.backward(
+            np.dot(self.input_data.T, delta))
         self.bias_grad = self.activation.backward(delta)
         delta = np.dot(delta, self.weights.T)
 
@@ -176,7 +177,8 @@ class NeuralNetwork:
         for config in layer_configs:
             optim_w = optimizer()
             optim_b = optimizer()
-            self.modules.append((FullyConnectedLayer(config), optim_w, optim_b))
+            self.modules.append(
+                (FullyConnectedLayer(config), optim_w, optim_b))
 
     def forward(self, input_data):
         for module, _, _ in self.modules:
@@ -234,8 +236,10 @@ def main():
 
     Net = NeuralNetwork()
     layer_config = [
-        {'input_size': 1, 'output_size': 3, 'normalize': DirectLayer(), 'activation': Tanh()},
-        {'input_size': 3, 'output_size': 1, 'normalize': DirectLayer(), 'activation': DirectLayer()},
+        {'input_size': 1, 'output_size': 3,
+            'normalize': DirectLayer(), 'activation': Tanh()},
+        {'input_size': 3, 'output_size': 1,
+            'normalize': DirectLayer(), 'activation': DirectLayer()},
     ]
 
     Net.make_layers(layer_config, optimizer=Adam)
