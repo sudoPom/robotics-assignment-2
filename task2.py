@@ -2,6 +2,8 @@ import os
 import numpy as np
 import pickle
 
+from activation_functions import *
+
 one_hot_encoding = {
     'Iris-setosa': np.array([1, 0, 0]),
     'Iris-versicolor': np.array([0, 1, 0]),
@@ -17,108 +19,25 @@ classification_encoding = {
 result_label = ['Iris-setosa', 'Iris-versicolor', 'Iris-virginica']
 
 
-class Sigmoid:
-    def __init__(self):
-        self.x = None
-
-    def forward(self, x):
-        self.x = x
-        return 1 / (1 + np.exp(-x))
-
-    def backward(self, grad):
-        return grad * (self.x * (1 - self.x))
-
-    def __call__(self, *args, **kwargs):
-        return self.forward(*args, **kwargs)
-
-
-class Softmax:
-    def __init__(self):
-        self.x = None
-
-    def forward(self, x):
-        self.x = x
-        exp_x = np.exp(x)
-        return exp_x / np.sum(exp_x, axis=1, keepdims=True)
-
-    def backward(self, grad):
-        return grad
-
-    def __call__(self, *args, **kwargs):
-        return self.forward(*args, **kwargs)
-
-
-class ReLu:
-    def __init__(self):
-        self.x = None
-
-    def forward(self, x):
-        self.x = x
-        return np.maximum(0, x)
-
-    def backward(self, grad):
-        grad * (self.x > 0)
-        return grad
-
-    def __call__(self, *args, **kwargs):
-        return self.forward(*args, **kwargs)
-
-
-class Leaky_ReLu:
-    def __init__(self, alpha):
-        self.x = None
-        self.alpha = alpha
-
-    def forward(self, x):
-        self.x = x
-        return np.maximum(self.alpha * x, x)
-
-    def backward(self, grad):
-        return grad * (self.x > 0) + self.alpha * grad * (self.x <= 0)
-
-    def __call__(self, *args, **kwargs):
-        return self.forward(*args, **kwargs)
-
-
-class Tanh:
-    def __init__(self):
-        self.x = None
-
-    def forward(self, x):
-        self.x = x
-        return np.tanh(x)
-
-    def backward(self, grad):
-        return grad * (1 - np.tanh(self.x) ** 2)
-
-    def __call__(self, *args, **kwargs):
-        return self.forward(*args, **kwargs)
-
-
-class DirectLayer:
-    def forward(self, x):
-        return x
-
-    def backward(self, grad):
-        return grad
-
-    def __call__(self, *args, **kwargs):
-        return self.forward(*args, **kwargs)
-
-
-class MSELoss:
+class ISELoss:
+    """Instantaneous Square Error Loss Function"""
     @staticmethod
     def loss(y, y_pred):
-        return np.mean(np.power(y - y_pred, 2))
+        """Computes the Instantaneous Square Error of the networks calculated values."""
+        return 0.5 * np.sum(np.power(y - y_pred, 2))
 
     @staticmethod
     def gradient(y, y_pred):
-        return 2 * (y_pred - y)
+        """Calculates the derivative of the sum of square errors"""
+        return y_pred - y
 
 
 class Softmax_CrossEntropyLoss:
+    """Softmax Cross Entropy Function"""
+
     @staticmethod
     def loss(y, y_pred):
+        """Computes the Softmax Cross Entropy on the networks calculated values."""
         return -np.sum(y * np.log(y_pred))
 
     @staticmethod
@@ -127,18 +46,28 @@ class Softmax_CrossEntropyLoss:
 
 
 class Normalization:
+    """Normalization Function
+
+    Attributes:
+        x: Data set to be normalized.
+        mean: Mean of the data set.
+        std: Standard deviation of the data set. 
+    """
+
     def __init__(self):
         self.x = None
         self.mean = None
         self.std = None
 
     def forward(self, x):
+        """Normalizes all values in the data set to values between 1 and 0."""
         self.x = x
         self.mean = np.mean(x)
         self.std = np.std(x)
         return (x - self.mean) / self.std
 
     def backward(self, grad):
+        """Returns the derivative of the normalization function scaled by an input gradient. """
         return grad
 
     def __call__(self, *args, **kwargs):
@@ -146,6 +75,8 @@ class Normalization:
 
 
 class Adam:
+    """Adam Optimization"""
+
     def __init__(self, beta1=0.999, beta2=0.999, eps=1e-8):
         self.beta1 = beta1
         self.beta2 = beta2
@@ -205,7 +136,8 @@ class FullyConnectedLayer:
         return self.output_data
 
     def backward(self, delta):
-        self.weights_grad = self.activation.backward(np.dot(self.input_data.T, delta))
+        self.weights_grad = self.activation.backward(
+            np.dot(self.input_data.T, delta))
         self.bias_grad = self.activation.backward(delta)
         delta = np.dot(delta, self.weights.T)
 
@@ -226,7 +158,8 @@ class NeuralNetwork:
         for config in layer_configs:
             optim_w = optimizer()
             optim_b = optimizer()
-            self.modules.append((FullyConnectedLayer(config), optim_w, optim_b))
+            self.modules.append(
+                (FullyConnectedLayer(config), optim_w, optim_b))
 
     def forward(self, input_data):
         for module, _, _ in self.modules:
@@ -313,12 +246,15 @@ def main():
     train_set, test_set = prep_dataset('IrisData.txt')
     model = NeuralNetwork()
     layer_config = [
-        {'input_size': 4, 'output_size': 5, 'normalize': Normalization(), 'activation': Tanh()},
-        {'input_size': 5, 'output_size': 3, 'normalize': DirectLayer(), 'activation': Softmax()},
+        {'input_size': 4, 'output_size': 5, 'normalize': Normalization(),
+         'activation': Tanh()},
+        {'input_size': 5, 'output_size': 3,
+            'normalize': DirectLayer(), 'activation': Softmax()},
     ]
 
     model.make_layers(layer_config, optimizer=Adam)
-    model.train(train_set, epochs=2000, loss_func=Softmax_CrossEntropyLoss, lr=0.005)
+    model.train(train_set, epochs=2000,
+                loss_func=Softmax_CrossEntropyLoss, lr=0.005)
     accuracy = validate(model, test_set)
     print('Accuracy: {}'.format(accuracy))
     model.dump_model('model_task2.pkl')

@@ -2,12 +2,14 @@ import os
 import pickle
 import numpy as np
 import matplotlib.pyplot as plt
+from activation_functions import *
 
 
 def func(x):
     return 0.8 * np.power(x, 3) + 0.3 * np.power(x, 2) - 0.4 * x + np.random.normal(0, 0.02, x.shape)
 
 
+<<<<<<<< HEAD:task1_SGD.py
 class Tanh:
     def __init__(self):
         self.x = None
@@ -34,10 +36,12 @@ class DirectLayer:
         return self.forward(*args, **kwargs)
 
 
+========
+>>>>>>>> ec1694c3efd1d850f79569ee3f2244cf90ee732d:task1.py
 class MSELoss:
     @staticmethod
     def loss(y, y_pred):
-        return 0.5 * np.mean(np.power(y - y_pred, 2))
+        return 0.5 * np.sum(np.power(y - y_pred, 2))
 
     @staticmethod
     def gradient(y, y_pred):
@@ -86,8 +90,13 @@ class FullyConnectedLayer:
         return self.output_data
 
     def backward(self, delta):
+<<<<<<<< HEAD:task1_SGD.py
         # calculate gradient of weights and bias based on the previous layer's delta
         self.weights_grad = self.activation.backward(np.dot(self.input_data.T, delta))
+========
+        self.weights_grad = self.activation.backward(
+            np.dot(self.input_data.T, delta))
+>>>>>>>> ec1694c3efd1d850f79569ee3f2244cf90ee732d:task1.py
         self.bias_grad = self.activation.backward(delta)
 
         # calculate delta for this layer and return it
@@ -116,9 +125,14 @@ class NeuralNetwork:
             # create a new layer with its own optimizer
             optim_w = optimizer()
             optim_b = optimizer()
+<<<<<<<< HEAD:task1_SGD.py
 
             # store the layer and its optimizer to the module list
             self.modules.append((FullyConnectedLayer(config), optim_w, optim_b))
+========
+            self.modules.append(
+                (FullyConnectedLayer(config), optim_w, optim_b))
+>>>>>>>> ec1694c3efd1d850f79569ee3f2244cf90ee732d:task1.py
 
     def forward(self, input_data):
         # forward the input data through the network
@@ -254,8 +268,10 @@ def main():
 
     model = NeuralNetwork()
     layer_config = [
-        {'input_size': 1, 'output_size': 3, 'normalize': DirectLayer(), 'activation': Tanh()},
-        {'input_size': 3, 'output_size': 1, 'normalize': DirectLayer(), 'activation': DirectLayer()},
+        {'input_size': 1, 'output_size': 3,
+            'normalize': DirectLayer(), 'activation': Tanh()},
+        {'input_size': 3, 'output_size': 1,
+            'normalize': DirectLayer(), 'activation': DirectLayer()},
     ]
 
     model.make_layers(layer_config, optimizer=SGD)
