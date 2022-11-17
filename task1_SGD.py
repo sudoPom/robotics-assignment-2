@@ -34,10 +34,10 @@ class DirectLayer:
         return self.forward(*args, **kwargs)
 
 
-class MSELoss:
+class ISELoss:
     @staticmethod
     def loss(y, y_pred):
-        return 0.5 * np.mean(np.power(y - y_pred, 2))
+        return 0.5 * np.sum(np.power(y - y_pred, 2))
 
     @staticmethod
     def gradient(y, y_pred):
@@ -87,7 +87,8 @@ class FullyConnectedLayer:
 
     def backward(self, delta):
         # calculate gradient of weights and bias based on the previous layer's delta
-        self.weights_grad = self.activation.backward(np.dot(self.input_data.T, delta))
+        self.weights_grad = self.activation.backward(
+            np.dot(self.input_data.T, delta))
         self.bias_grad = self.activation.backward(delta)
 
         # calculate delta for this layer and return it
@@ -118,7 +119,8 @@ class NeuralNetwork:
             optim_b = optimizer()
 
             # store the layer and its optimizer to the module list
-            self.modules.append((FullyConnectedLayer(config), optim_w, optim_b))
+            self.modules.append(
+                (FullyConnectedLayer(config), optim_w, optim_b))
 
     def forward(self, input_data):
         # forward the input data through the network
@@ -254,12 +256,14 @@ def main():
 
     model = NeuralNetwork()
     layer_config = [
-        {'input_size': 1, 'output_size': 3, 'normalize': DirectLayer(), 'activation': Tanh()},
-        {'input_size': 3, 'output_size': 1, 'normalize': DirectLayer(), 'activation': DirectLayer()},
+        {'input_size': 1, 'output_size': 3,
+            'normalize': DirectLayer(), 'activation': Tanh()},
+        {'input_size': 3, 'output_size': 1,
+            'normalize': DirectLayer(), 'activation': DirectLayer()},
     ]
 
     model.make_layers(layer_config, optimizer=SGD)
-    model.train(dataset, epochs=10000, loss_func=MSELoss, lr=0.01)
+    model.train(dataset, epochs=10000, loss_func=ISELoss, lr=0.01)
     test_predict(model)
     model.dump_model('task1_model_SGD.pkl')
 

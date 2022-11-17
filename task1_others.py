@@ -53,11 +53,11 @@ class DirectLayer:
         return self.forward(*args, **kwargs)
 
 
-class MSELoss:
+class ISELoss:
     @staticmethod
     # calculate loss value
     def loss(y, y_pred):
-        return 0.5 * np.mean(np.power(y - y_pred, 2))
+        return 0.5 * np.sum(np.power(y - y_pred, 2))
 
     @staticmethod
     # calculate the gradient of the loss function
@@ -166,7 +166,8 @@ class FullyConnectedLayer:
 
     def backward(self, delta):
         # calculate gradient of weights and bias based on the previous layer's delta
-        self.weights_grad = self.activation.backward(np.dot(self.input_data.T, delta))
+        self.weights_grad = self.activation.backward(
+            np.dot(self.input_data.T, delta))
         self.bias_grad = self.activation.backward(delta)
 
         # calculate delta for this layer and return it
@@ -197,7 +198,8 @@ class NeuralNetwork:
             optim_b = optimizer()
 
             # store the layer and its optimizer to the module list
-            self.modules.append((FullyConnectedLayer(config), optim_w, optim_b))
+            self.modules.append(
+                (FullyConnectedLayer(config), optim_w, optim_b))
 
     def forward(self, input_data):
         # forward the input data through the network
@@ -306,13 +308,15 @@ def train_model_adam_optimizer():
 
     # keep the same 1-3-1 layer structure
     layer_config = [
-        {'input_size': 1, 'output_size': 3, 'normalize': DirectLayer(), 'activation': Tanh()},
-        {'input_size': 3, 'output_size': 1, 'normalize': DirectLayer(), 'activation': DirectLayer()},
+        {'input_size': 1, 'output_size': 3,
+            'normalize': DirectLayer(), 'activation': Tanh()},
+        {'input_size': 3, 'output_size': 1,
+            'normalize': DirectLayer(), 'activation': DirectLayer()},
     ]
 
     # use Adam optimizer to train the model
     model.make_layers(layer_config, optimizer=Adam)
-    model.train(dataset, epochs=5000, loss_func=MSELoss, lr=0.01)
+    model.train(dataset, epochs=5000, loss_func=ISELoss, lr=0.01)
 
     # use the model to predict the result
     test_predict(model)
@@ -330,13 +334,15 @@ def train_model_different_size():
 
     # use larger network structure with 1-10-1
     layer_config = [
-        {'input_size': 1, 'output_size': 10, 'normalize': DirectLayer(), 'activation': Tanh()},
-        {'input_size': 10, 'output_size': 1, 'normalize': DirectLayer(), 'activation': DirectLayer()},
+        {'input_size': 1, 'output_size': 10,
+            'normalize': DirectLayer(), 'activation': Tanh()},
+        {'input_size': 10, 'output_size': 1,
+            'normalize': DirectLayer(), 'activation': DirectLayer()},
     ]
 
     # use the same SGD optimizer to train the model
     model.make_layers(layer_config, optimizer=SGD)
-    model.train(dataset, epochs=5000, loss_func=MSELoss, lr=0.01)
+    model.train(dataset, epochs=5000, loss_func=ISELoss, lr=0.01)
 
     # use the model to predict the result
     test_predict(model)
@@ -355,13 +361,15 @@ def train_model_different_activation():
     # use the same 1-3-1 layer structure but use different activation function
     layer_config = [
         # use the ReLU activation function instead of Tanh
-        {'input_size': 1, 'output_size': 3, 'normalize': DirectLayer(), 'activation': ReLu()},
-        {'input_size': 3, 'output_size': 1, 'normalize': DirectLayer(), 'activation': DirectLayer()},
+        {'input_size': 1, 'output_size': 3,
+            'normalize': DirectLayer(), 'activation': ReLu()},
+        {'input_size': 3, 'output_size': 1,
+            'normalize': DirectLayer(), 'activation': DirectLayer()},
     ]
 
     # use the same SGD optimizer to train the model
     model.make_layers(layer_config, optimizer=SGD)
-    model.train(dataset, epochs=5000, loss_func=MSELoss, lr=0.01)
+    model.train(dataset, epochs=5000, loss_func=ISELoss, lr=0.01)
 
     # use the model to predict the result
     test_predict(model)

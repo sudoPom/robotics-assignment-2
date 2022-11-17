@@ -2,8 +2,6 @@ import os
 import numpy as np
 import pickle
 
-from activation_functions import *
-from loss_functions import *
 
 one_hot_encoding = {
     'Iris-setosa': np.array([1, 0, 0]),
@@ -18,6 +16,70 @@ classification_encoding = {
 }
 
 result_label = ['Iris-setosa', 'Iris-versicolor', 'Iris-virginica']
+
+
+class Softmax_CrossEntropyLoss:
+    """Softmax Cross Entropy Function"""
+
+    @staticmethod
+    def loss(y, y_pred):
+        """Computes the Softmax Cross Entropy on the networks calculated values."""
+        return -np.sum(y * np.log(y_pred))
+
+    @staticmethod
+    def gradient(y, y_pred):
+        return y_pred - y
+
+
+class Tanh:
+    def __init__(self):
+        self.x = None
+
+    def forward(self, x):
+        # Save the input for the backward pass
+        self.x = x
+        return np.tanh(x)
+
+    def backward(self, grad):
+        # The gradient of tanh is (1 - tanh(x)^2)
+        return grad * (1 - np.tanh(self.x) ** 2)
+
+    def __call__(self, *args, **kwargs):
+        return self.forward(*args, **kwargs)
+
+
+class Softmax:
+    """Softmax Activation Function.
+    Attributes:
+        x: Input to the function.    
+    """
+
+    def __init__(self):
+        self.x = None
+
+    def forward(self, x):
+        """Calculates the result of the function."""
+        self.x = x
+        exp_x = np.exp(x)
+        return exp_x / np.sum(exp_x, axis=1, keepdims=True)
+
+    def backward(self, grad):
+        """Calculates the derivative of the function and scales the input gradient by it"""
+        return grad
+
+    def __call__(self, *args, **kwargs):
+        return self.forward(*args, **kwargs)
+
+
+class DirectLayer:
+    def forward(self, x):
+        return x
+
+    def backward(self, grad):
+        return grad
+
+    def __call__(self, *args, **kwargs):
+        return self.forward(*args, **kwargs)
 
 
 class Normalization:
