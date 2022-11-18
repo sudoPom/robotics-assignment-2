@@ -1,6 +1,6 @@
 from network import NeuralNetwork
 from activation_func import *
-from loss_func import MSELoss
+from loss_func import ISELoss
 from optimizers import SGD
 
 import os
@@ -73,7 +73,7 @@ def main():
     ]
 
     model.make_layers(layer_config, optimizer=SGD)
-    model.train(dataset, epochs=10000, loss_func=MSELoss, lr=0.01)
+    model.train(dataset, epochs=10000, loss_func=ISELoss, lr=0.01)
     test_predict(model)
     model.dump_model('task1_model_SGD.pkl')
 

@@ -1,6 +1,6 @@
 from network import NeuralNetwork
 from activation_func import *
-from loss_func import MSELoss
+from loss_func import ISELoss
 from optimizers import *
 
 import os
@@ -78,7 +78,7 @@ def train_model_adam_optimizer():
 
     # use Adam optimizer to train the model
     model.make_layers(layer_config, optimizer=Adam)
-    model.train(dataset, epochs=5000, loss_func=MSELoss, lr=0.01)
+    model.train(dataset, epochs=5000, loss_func=ISELoss, lr=0.01)
 
     # use the model to predict the result
     test_predict(model)
@@ -102,7 +102,7 @@ def train_model_different_size():
 
     # use the same SGD optimizer to train the model
     model.make_layers(layer_config, optimizer=SGD)
-    model.train(dataset, epochs=5000, loss_func=MSELoss, lr=0.01)
+    model.train(dataset, epochs=5000, loss_func=ISELoss, lr=0.01)
 
     # use the model to predict the result
     test_predict(model)
@@ -127,7 +127,7 @@ def train_model_different_activation():
 
     # use the same SGD optimizer to train the model
     model.make_layers(layer_config, optimizer=SGD)
-    model.train(dataset, epochs=5000, loss_func=MSELoss, lr=0.01)
+    model.train(dataset, epochs=5000, loss_func=ISELoss, lr=0.01)
 
     # use the model to predict the result
     test_predict(model)
@@ -152,7 +152,7 @@ def train_model_different_lr():
     # use the same SGD optimizer to train the model
     model.make_layers(layer_config, optimizer=SGD)
     # use a larger learning rate of 0.1
-    model.train(dataset, epochs=5000, loss_func=MSELoss, lr=0.1)
+    model.train(dataset, epochs=5000, loss_func=ISELoss, lr=0.1)
 
     # use the model to predict the result
     test_predict(model)

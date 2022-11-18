@@ -1,11 +1,11 @@
 import numpy as np
 
 
-class MSELoss:
+class ISELoss:
     @staticmethod
     # calculate loss value
     def loss(y, y_pred):
-        return 0.5 * np.mean(np.power(y - y_pred, 2))
+        return 0.5 * np.sum(np.power(y - y_pred, 2))
 
     @staticmethod
     # calculate the gradient of the loss function
