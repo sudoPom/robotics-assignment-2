@@ -145,4 +145,3 @@ class NeuralNetwork:
 
         # load the modules from the model dict
         self.modules = model_dict['modules']
-
