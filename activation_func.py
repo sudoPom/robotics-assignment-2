@@ -34,26 +34,12 @@ class Tanh:
 
 
 class DirectLayer:
+    # This is the direct layer, which is used to replace the activation function if no activation is needed
     def forward(self, x):
         return x
 
     def backward(self, grad):
         return grad
-
-    def __call__(self, *args, **kwargs):
-        return self.forward(*args, **kwargs)
-
-
-class Sigmoid:
-    def __init__(self):
-        self.x = None
-
-    def forward(self, x):
-        self.x = x
-        return 1 / (1 + np.exp(-x))
-
-    def backward(self, grad):
-        return grad * (self.x * (1 - self.x))
 
     def __call__(self, *args, **kwargs):
         return self.forward(*args, **kwargs)
@@ -78,6 +64,7 @@ class Softmax:
 
 
 class Normalization:
+    # Layer normalization is used to normalize the input of each layer
     def __init__(self):
         self.x = None
         self.mean = None
