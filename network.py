@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 
 
 class FullyConnectedLayer:
+    # This is the class of the single layer of the fully connected neural network
     def __init__(self, config: dict):
         # set the normalization and activation function based on the config
         self.normalize = config['normalize']
@@ -35,7 +36,7 @@ class FullyConnectedLayer:
         return self.output_data
 
     def backward(self, delta):
-        # calculate gradient of weights and bias based on the previous layer's delta
+        # calculate gradient of weights and bias based on the last layer's delta
         self.weights_grad = np.dot(self.input_data.T, self.activation.backward(delta))
         self.bias_grad = self.activation.backward(delta)
 
@@ -55,6 +56,7 @@ class FullyConnectedLayer:
 
 
 class NeuralNetwork:
+    # This is the class of the whole neural network, which contains multiple layers
     def __init__(self):
         # list of modules in the network
         self.modules = []
