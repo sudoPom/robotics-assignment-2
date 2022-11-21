@@ -11,14 +11,18 @@ class Adam:
         self.t = 0
 
     def update(self, lr, grad):
+        # initialize m and v with 0 if they are None
         if self.m is None:
             self.m = np.zeros_like(grad)
             self.v = np.zeros_like(grad)
 
-        self.t = min(self.t + 1, 100000)
+        self.t = min(self.t + 1, 100000)  # prevent overflow
+
+        # update m and v
         self.m = self.beta1 * self.m + (1 - self.beta1) * grad
         m_hat = self.m / (1 - np.power(self.beta1, self.t))
 
+        # update v
         self.v = self.beta2 * self.v + (1 - self.beta2) * np.power(grad, 2)
         v_hat = self.v / (1 - np.power(self.beta2, self.t))
 
