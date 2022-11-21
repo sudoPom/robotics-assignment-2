@@ -20,6 +20,16 @@ def one_hot_decode(one_hot):
 
 
 def prep_dataset(file_path: str, split_ratio=0.7):
+    """
+    Prepare the dataset for training and validation
+
+    Parameters
+    ----------
+    file_path: str
+        The path of the dataset
+    split_ratio: float
+        The ratio of the training set to the whole dataset
+    """
     dataset = []
     with open(file_path) as f:
         for line in f:
@@ -30,7 +40,10 @@ def prep_dataset(file_path: str, split_ratio=0.7):
             data_y = one_hot_encoding[data[-1]]
             dataset.append((data_x, data_y))
 
+    # shuffle the dataset
     np.random.shuffle(dataset)
+
+    # split the dataset into training set and validation set with the split ratio
     split_idx = round(len(dataset) * split_ratio)
     training_set = dataset[:split_idx]
     validation_set = dataset[split_idx:]
@@ -39,6 +52,16 @@ def prep_dataset(file_path: str, split_ratio=0.7):
 
 
 def validate(model, validation_set):
+    """
+    Validate the model with the validation set
+
+    Parameters
+    ----------
+    model: NeuralNetwork
+        The model to be validated
+    validation_set: list
+        The validation set to validate the model
+    """
     correct = 0
     for data_x, data_y in validation_set:
         y_hat = model.predict(data_x)
@@ -51,18 +74,35 @@ def validate(model, validation_set):
 
 
 def test_predict(path: str):
+    """
+    Test a trained model with a single input
+
+    Parameters
+    ----------
+    path: str
+        The path of the model
+    """
     Net = NeuralNetwork()
     Net.load_model(path)
-    test_data = np.array([[4.9, 3.1, 1, 0.1]])
+
+    # set the input data to get its prediction
+    test_data = np.array([[5.8, 2.8, 5.1, 2.4]])
     prediction = Net.predict(test_data)
-    classification = one_hot_decode(prediction)
+
+    # print the raw prediction
+    print(prediction)
+
+    # print the classification
+    classification = np.argmax(prediction)
     print(classification)
+
+    # print the label of the classification
     label = result_label[classification]
     print(label)
 
 
 def train_model_adam_optimizer():
-    train_set, test_set = prep_dataset('IrisData.txt')
+    train_set, validation_set = prep_dataset('IrisData.txt')
     model = NeuralNetwork()
     layer_config = [
         {'input_size': 4, 'output_size': 5, 'normalize': Normalization(), 'activation': Tanh()},
@@ -71,30 +111,30 @@ def train_model_adam_optimizer():
     ]
 
     model.make_layers(layer_config, optimizer=Adam)
-    model.train(train_set, epochs=5000, loss_func=Softmax_CrossEntropyLoss, lr=0.005)
-    accuracy = validate(model, test_set)
+    model.train(train_set, epochs=5000, loss_func=Softmax_CrossEntropyLoss, lr=0.002)
+    accuracy = validate(model, validation_set)
     print('Accuracy: {}'.format(accuracy))
     model.dump_model('task2_model_others.pkl')
 
 
 def train_model_different_activation():
-    train_set, test_set = prep_dataset('IrisData.txt')
+    train_set, validation_set = prep_dataset('IrisData.txt')
     model = NeuralNetwork()
     layer_config = [
-        {'input_size': 4, 'output_size': 5, 'normalize': Normalization(), 'activation': ReLu()},
-        {'input_size': 5, 'output_size': 3, 'normalize': Normalization(), 'activation': ReLu()},
+        {'input_size': 4, 'output_size': 5, 'normalize': DirectLayer(), 'activation': ReLu()},
+        {'input_size': 5, 'output_size': 3, 'normalize': DirectLayer(), 'activation': ReLu()},
         {'input_size': 3, 'output_size': 3, 'normalize': DirectLayer(), 'activation': Softmax()},
     ]
 
     model.make_layers(layer_config, optimizer=SGD)
-    model.train(train_set, epochs=5000, loss_func=Softmax_CrossEntropyLoss, lr=0.005)
-    accuracy = validate(model, test_set)
+    model.train(train_set, epochs=5000, loss_func=Softmax_CrossEntropyLoss, lr=0.001)
+    accuracy = validate(model, validation_set)
     print('Accuracy: {}'.format(accuracy))
     model.dump_model('task2_model_others.pkl')
 
 
 def train_model_different_size():
-    train_set, test_set = prep_dataset('IrisData.txt')
+    train_set, validation_set = prep_dataset('IrisData.txt')
     model = NeuralNetwork()
     layer_config = [
         {'input_size': 4, 'output_size': 8, 'normalize': Normalization(), 'activation': Tanh()},
@@ -104,13 +144,13 @@ def train_model_different_size():
 
     model.make_layers(layer_config, optimizer=SGD)
     model.train(train_set, epochs=5000, loss_func=Softmax_CrossEntropyLoss, lr=0.005)
-    accuracy = validate(model, test_set)
+    accuracy = validate(model, validation_set)
     print('Accuracy: {}'.format(accuracy))
     model.dump_model('task2_model_others.pkl')
 
 
 def train_model_different_lr():
-    train_set, test_set = prep_dataset('IrisData.txt')
+    train_set, validation_set = prep_dataset('IrisData.txt')
     model = NeuralNetwork()
     layer_config = [
         {'input_size': 4, 'output_size': 5, 'normalize': Normalization(), 'activation': Tanh()},
@@ -120,7 +160,7 @@ def train_model_different_lr():
 
     model.make_layers(layer_config, optimizer=SGD)
     model.train(train_set, epochs=5000, loss_func=Softmax_CrossEntropyLoss, lr=0.01)
-    accuracy = validate(model, test_set)
+    accuracy = validate(model, validation_set)
     print('Accuracy: {}'.format(accuracy))
     model.dump_model('task2_model_others.pkl')
 

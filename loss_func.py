@@ -14,6 +14,7 @@ class ISELoss:
 
 
 class Softmax_CrossEntropyLoss:
+    # This is the combination of softmax and cross entropy loss
     @staticmethod
     def loss(y, y_pred):
         return -np.sum(y * np.log(y_pred))

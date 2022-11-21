@@ -36,11 +36,11 @@ class FullyConnectedLayer:
 
     def backward(self, delta):
         # calculate gradient of weights and bias based on the previous layer's delta
-        self.weights_grad = self.activation.backward(np.dot(self.input_data.T, delta))
+        self.weights_grad = np.dot(self.input_data.T, self.activation.backward(delta))
         self.bias_grad = self.activation.backward(delta)
 
         # calculate delta for this layer and return it
-        delta = np.dot(delta, self.weights.T)
+        delta = np.dot(self.activation.backward(delta), self.weights.T)
 
         return delta
 
