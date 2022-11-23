@@ -113,7 +113,7 @@ class NeuralNetwork:
                 # update the weights and bias of each layer
                 self.update(lr)
 
-            if epoch % 100 == 0:  # print and record the loss of each 100 epochs
+            if epoch % 50 == 0:  # print and record the loss of each 50 epochs
                 loss_list.append((epoch, np.mean(loss_epoch)))
                 print('Epoch: {}, Loss: {}'.format(epoch, np.mean(loss_epoch)))
 

@@ -63,7 +63,7 @@ class AdaGrad:
 
 
 class RMSProp:
-    def __init__(self, beta=0.9, eps=1e-8):
+    def __init__(self, beta=0.99, eps=1e-8):
         self.beta = beta
         self.eps = eps
         self.v = None

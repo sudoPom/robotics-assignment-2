@@ -61,7 +61,7 @@ def load_and_predict(file_path):
     test_predict(model)
 
 
-def train_model_adam_optimizer():
+def train_model_Adam_optimizer():
     """
     Train the model with the same network structure and Adam optimizer
     """
@@ -78,7 +78,55 @@ def train_model_adam_optimizer():
 
     # use Adam optimizer to train the model
     model.make_layers(layer_config, optimizer=Adam)
-    model.train(dataset, epochs=5000, loss_func=ISELoss, lr=0.01)
+    model.train(dataset, epochs=5000, loss_func=ISELoss, lr=0.02)
+
+    # use the model to predict the result
+    test_predict(model)
+    model.dump_model('task1_model_others.pkl')
+
+
+def train_model_AdaGrad_optimizer():
+    """
+    Train the model with the same network structure and AdaGrad optimizer
+    """
+    x = np.arange(-1, 1, 0.05)
+    y = func(x)
+    dataset = list(zip(x, y))
+    model = NeuralNetwork()
+
+    # keep the same 1-3-1 layer structure
+    layer_config = [
+        {'input_size': 1, 'output_size': 3, 'normalize': DirectLayer(), 'activation': Tanh()},
+        {'input_size': 3, 'output_size': 1, 'normalize': DirectLayer(), 'activation': DirectLayer()},
+    ]
+
+    # use AdaGrad optimizer to train the model
+    model.make_layers(layer_config, optimizer=AdaGrad)
+    model.train(dataset, epochs=10000, loss_func=ISELoss, lr=0.02)
+
+    # use the model to predict the result
+    test_predict(model)
+    model.dump_model('task1_model_others.pkl')
+
+
+def train_model_RMSProp_optimizer():
+    """
+    Train the model with the same network structure and RMSProp optimizer
+    """
+    x = np.arange(-1, 1, 0.05)
+    y = func(x)
+    dataset = list(zip(x, y))
+    model = NeuralNetwork()
+
+    # keep the same 1-3-1 layer structure
+    layer_config = [
+        {'input_size': 1, 'output_size': 3, 'normalize': DirectLayer(), 'activation': Tanh()},
+        {'input_size': 3, 'output_size': 1, 'normalize': DirectLayer(), 'activation': DirectLayer()},
+    ]
+
+    # use RMSProp optimizer to train the model
+    model.make_layers(layer_config, optimizer=RMSProp)
+    model.train(dataset, epochs=10000, loss_func=ISELoss, lr=0.02)
 
     # use the model to predict the result
     test_predict(model)
@@ -102,7 +150,7 @@ def train_model_different_size():
 
     # use the same SGD optimizer to train the model
     model.make_layers(layer_config, optimizer=SGD)
-    model.train(dataset, epochs=5000, loss_func=ISELoss, lr=0.01)
+    model.train(dataset, epochs=10000, loss_func=ISELoss, lr=0.02)
 
     # use the model to predict the result
     test_predict(model)
@@ -127,7 +175,7 @@ def train_model_different_activation():
 
     # use the same SGD optimizer to train the model
     model.make_layers(layer_config, optimizer=SGD)
-    model.train(dataset, epochs=5000, loss_func=ISELoss, lr=0.01)
+    model.train(dataset, epochs=10000, loss_func=ISELoss, lr=0.02)
 
     # use the model to predict the result
     test_predict(model)
@@ -152,7 +200,7 @@ def train_model_different_lr():
     # use the same SGD optimizer to train the model
     model.make_layers(layer_config, optimizer=SGD)
     # use a larger learning rate of 0.1
-    model.train(dataset, epochs=5000, loss_func=ISELoss, lr=0.1)
+    model.train(dataset, epochs=10000, loss_func=ISELoss, lr=0.1)
 
     # use the model to predict the result
     test_predict(model)
@@ -160,8 +208,10 @@ def train_model_different_lr():
 
 
 if __name__ == '__main__':
-    train_model_adam_optimizer()
-    # train_model_different_size()
+    # train_model_Adam_optimizer()
+    # train_model_AdaGrad_optimizer()
+    # train_model_RMSProp_optimizer()
+    train_model_different_size()
     # train_model_different_activation()
     # train_model_different_lr()
 
