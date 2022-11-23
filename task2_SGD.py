@@ -112,7 +112,7 @@ def main():
     ]
 
     model.make_layers(layer_config, optimizer=SGD)
-    model.train(train_set, epochs=3000, loss_func=Softmax_CrossEntropyLoss, lr=0.005)
+    model.train(train_set, epochs=5000, loss_func=Softmax_CrossEntropyLoss, lr=0.005)
     accuracy = validate(model, validation_set)
     print('Accuracy: {}'.format(accuracy))
     model.dump_model('task2_model_SGD.pkl')
@@ -120,4 +120,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+    # Load the already trained model and test it
     # test_predict('task2_model_SGD.pkl')

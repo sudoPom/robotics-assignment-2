@@ -101,7 +101,7 @@ def test_predict(path: str):
     print(label)
 
 
-def train_model_adam_optimizer():
+def train_model_Adam_optimizer():
     train_set, validation_set = prep_dataset('IrisData.txt')
     model = NeuralNetwork()
     layer_config = [
@@ -111,7 +111,39 @@ def train_model_adam_optimizer():
     ]
 
     model.make_layers(layer_config, optimizer=Adam)
-    model.train(train_set, epochs=5000, loss_func=Softmax_CrossEntropyLoss, lr=0.002)
+    model.train(train_set, epochs=2000, loss_func=Softmax_CrossEntropyLoss, lr=0.005)
+    accuracy = validate(model, validation_set)
+    print('Accuracy: {}'.format(accuracy))
+    model.dump_model('task2_model_others.pkl')
+
+
+def train_model_AdaGrad_optimizer():
+    train_set, validation_set = prep_dataset('IrisData.txt')
+    model = NeuralNetwork()
+    layer_config = [
+        {'input_size': 4, 'output_size': 5, 'normalize': Normalization(), 'activation': Tanh()},
+        {'input_size': 5, 'output_size': 3, 'normalize': Normalization(), 'activation': Tanh()},
+        {'input_size': 3, 'output_size': 3, 'normalize': DirectLayer(), 'activation': Softmax()},
+    ]
+
+    model.make_layers(layer_config, optimizer=AdaGrad)
+    model.train(train_set, epochs=2000, loss_func=Softmax_CrossEntropyLoss, lr=0.005)
+    accuracy = validate(model, validation_set)
+    print('Accuracy: {}'.format(accuracy))
+    model.dump_model('task2_model_others.pkl')
+
+
+def train_model_RMSProp_optimizer():
+    train_set, validation_set = prep_dataset('IrisData.txt')
+    model = NeuralNetwork()
+    layer_config = [
+        {'input_size': 4, 'output_size': 5, 'normalize': Normalization(), 'activation': Tanh()},
+        {'input_size': 5, 'output_size': 3, 'normalize': Normalization(), 'activation': Tanh()},
+        {'input_size': 3, 'output_size': 3, 'normalize': DirectLayer(), 'activation': Softmax()},
+    ]
+
+    model.make_layers(layer_config, optimizer=RMSProp)
+    model.train(train_set, epochs=2000, loss_func=Softmax_CrossEntropyLoss, lr=0.005)
     accuracy = validate(model, validation_set)
     print('Accuracy: {}'.format(accuracy))
     model.dump_model('task2_model_others.pkl')
@@ -121,13 +153,13 @@ def train_model_different_activation():
     train_set, validation_set = prep_dataset('IrisData.txt')
     model = NeuralNetwork()
     layer_config = [
-        {'input_size': 4, 'output_size': 5, 'normalize': DirectLayer(), 'activation': ReLu()},
-        {'input_size': 5, 'output_size': 3, 'normalize': DirectLayer(), 'activation': ReLu()},
+        {'input_size': 4, 'output_size': 5, 'normalize': Normalization(), 'activation': ReLu()},
+        {'input_size': 5, 'output_size': 3, 'normalize': Normalization(), 'activation': ReLu()},
         {'input_size': 3, 'output_size': 3, 'normalize': DirectLayer(), 'activation': Softmax()},
     ]
 
     model.make_layers(layer_config, optimizer=SGD)
-    model.train(train_set, epochs=5000, loss_func=Softmax_CrossEntropyLoss, lr=0.001)
+    model.train(train_set, epochs=2000, loss_func=Softmax_CrossEntropyLoss, lr=0.005)
     accuracy = validate(model, validation_set)
     print('Accuracy: {}'.format(accuracy))
     model.dump_model('task2_model_others.pkl')
@@ -136,6 +168,8 @@ def train_model_different_activation():
 def train_model_different_size():
     train_set, validation_set = prep_dataset('IrisData.txt')
     model = NeuralNetwork()
+
+    # make a different size of the neural network
     layer_config = [
         {'input_size': 4, 'output_size': 8, 'normalize': Normalization(), 'activation': Tanh()},
         {'input_size': 8, 'output_size': 5, 'normalize': Normalization(), 'activation': Tanh()},
@@ -143,7 +177,7 @@ def train_model_different_size():
     ]
 
     model.make_layers(layer_config, optimizer=SGD)
-    model.train(train_set, epochs=5000, loss_func=Softmax_CrossEntropyLoss, lr=0.005)
+    model.train(train_set, epochs=2000, loss_func=Softmax_CrossEntropyLoss, lr=0.005)
     accuracy = validate(model, validation_set)
     print('Accuracy: {}'.format(accuracy))
     model.dump_model('task2_model_others.pkl')
@@ -159,16 +193,19 @@ def train_model_different_lr():
     ]
 
     model.make_layers(layer_config, optimizer=SGD)
-    model.train(train_set, epochs=5000, loss_func=Softmax_CrossEntropyLoss, lr=0.01)
+    model.train(train_set, epochs=2000, loss_func=Softmax_CrossEntropyLoss, lr=0.01)
     accuracy = validate(model, validation_set)
     print('Accuracy: {}'.format(accuracy))
     model.dump_model('task2_model_others.pkl')
 
 
 if __name__ == '__main__':
-    train_model_adam_optimizer()
+    train_model_Adam_optimizer()
+    # train_model_AdaGrad_optimizer()
+    # train_model_RMSProp_optimizer()
     # train_model_different_activation()
     # train_model_different_size()
     # train_model_different_lr()
 
+    # Load the already trained model and test it
     # test_predict('task2_model_others.pkl')

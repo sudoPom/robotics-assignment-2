@@ -27,6 +27,7 @@ class Tanh:
         return np.tanh(x)
 
     def backward(self, grad):
+        # calculate the gradient of Tanh
         return grad * (1 - np.tanh(self.x) ** 2)
 
     def __call__(self, *args, **kwargs):
@@ -55,8 +56,12 @@ class Softmax:
         return exp_x / np.sum(exp_x, axis=1, keepdims=True)
 
     def backward(self, grad):
-        # I combine the gradient of softmax and cross entropy loss together in the cross entropy loss gradient
-        # so the gradient of softmax is 1
+        """
+        I combine the gradient of softmax and cross_entropy loss together in the cross_entropy loss gradient
+        so the gradient of softmax is 1, the joint gradient is not calculated here
+        The combination gradient is much simpler and more efficient than calculating the gradient separately
+        reference to https://deepnotes.io/softmax-crossentropy
+        """
         return grad
 
     def __call__(self, *args, **kwargs):

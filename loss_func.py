@@ -21,4 +21,9 @@ class Softmax_CrossEntropyLoss:
 
     @staticmethod
     def gradient(y, y_pred):
+        """
+        The gradient of softmax and cross entropy loss is combined, which is y_pred - y
+        The combination gradient is much simpler and more efficient than calculating the gradient separately
+        reference to https://deepnotes.io/softmax-crossentropy
+        """
         return y_pred - y
